@@ -1,3 +1,28 @@
+<?php 
+$qFilename = "data/question.csv";
+$fp = fopen($qFilename, "r");
+
+$phpQuestion = [];
+while(!feof($fp)){
+  $ary = explode(",", fgets($fp));
+  if(count($ary)!=1){ 
+    $select = [];
+    for($i=1; $i<count($ary); $i++){
+      array_push($select, $ary[$i]);
+    }
+   
+    $keyVal = array('question'=>$ary[0]);
+    $keyVal += array('answer'=>$select);
+    array_push($phpQuestion, $keyVal);
+  }
+}
+fclose($fp);
+
+$colon=" : ";
+$q="Q";
+?>
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -9,53 +34,29 @@
 </head>
 <body>
   <header>
-    <h1>アンケート</h1>
+    <h1>LAB16 アンケート</h1>
     <button onclick="location.href='./read.php'">結果を表示</button>
   </header>
   <main>
     <form action="write.php" method="post">
       <div>
         <p class="question required">回答者の名前</p>
-        <input type="text" name="name" required>
+        <input class="name" type="text" name="name" required>
       </div>
-      <div class="question_area">
-        <p class="question required">Q1：初対面の時の印象は？</p>
-        <input type="radio" name="q1" value="1" checked>真面目
-        <input type="radio" name="q1" value="2">面白い
-        <input type="radio" name="q1" value="3">性格悪い
-        <input type="radio" name="q1" value="4">怖い
-        <input type="radio" name="q1" value="5">興味ない
-      </div>
+      <?php for($i=0; $i<count($phpQuestion); $i++){ ?>
+        <div class="question_area panel">
+          <p class="question required"><?=$q.($i+1).$colon.$phpQuestion[$i]["question"]?></p>
+          <label><input type="radio" name=<?=$q.($i+1)?> value="1" checked><?=$phpQuestion[$i]["answer"][0]?></label>
+          <label><input type="radio" name=<?=$q.($i+1)?> value="2"><?=$phpQuestion[$i]["answer"][1]?></label>
+          <label><input type="radio" name=<?=$q.($i+1)?> value="3"><?=$phpQuestion[$i]["answer"][2]?></label>
+          <label><input type="radio" name=<?=$q.($i+1)?> value="4"><?=$phpQuestion[$i]["answer"][3]?></label>
+          <label><input type="radio" name=<?=$q.($i+1)?> value="5"><?=$phpQuestion[$i]["answer"][4]?></label>
+        </div>
+      <?php } ?>
 
+      <input class="qCnt" type="text" name="qCnt" val=<?=count($phpQuestion)?>>
       <div class="question_area">
-        <p class="question required">Q2：初対面の時の話しやすさは？</p>
-        <input type="radio" name="q2" value="1" checked>とても話しかけやすい
-        <input type="radio" name="q2" value="2">やや話しかけやすい
-        <input type="radio" name="q2" value="3">やや話しかけにくい
-        <input type="radio" name="q2" value="4">とても話しかけにくい
-        <input type="radio" name="q2" value="5">興味ない
-      </div>
-
-      <div class="question_area">
-        <p class="question required">Q3：現在の印象は？</p>
-        <input type="radio" name="q3" value="1" checked>真面目
-        <input type="radio" name="q3" value="2">面白い
-        <input type="radio" name="q3" value="3">性格悪い
-        <input type="radio" name="q3" value="4">怖い
-        <input type="radio" name="q3" value="5">興味ない
-      </div>
-
-      <div class="question_area">
-        <p class="question required">Q4：現在の話しやすさは？</p>
-        <input type="radio" name="q4" value="1" checked>とても話しかけやすい
-        <input type="radio" name="q4" value="2">やや話しかけやすい
-        <input type="radio" name="q4" value="3">やや話しかけにくい
-        <input type="radio" name="q4" value="4">とても話しかけにくい
-        <input type="radio" name="q4" value="5">興味ない
-      </div>
-
-      <div class="question_area">
-        <p class="question">最後に、応援コメントをお願いします！</p>
+        <p class="question">その他メッセージ等あればご記入ください。</p>
         <textarea type="text" name="comment"></textarea>  
       </div>
       
